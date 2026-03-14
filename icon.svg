@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#2c1a0e"/>
+  <rect x="0" y="380" width="512" height="132" rx="0" fill="#3d2510"/>
+  <rect x="0" y="380" width="512" height="20" fill="#5a7a3a"/>
+  <!-- stem -->
+  <line x1="256" y1="380" x2="256" y2="200" stroke="#7aaa4a" stroke-width="18" stroke-linecap="round"/>
+  <!-- left stem curve -->
+  <path d="M256 300 Q190 260 160 200" stroke="#7aaa4a" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <!-- right stem curve -->
+  <path d="M256 260 Q320 220 350 160" stroke="#7aaa4a" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <!-- main big leaf -->
+  <ellipse cx="256" cy="150" rx="90" ry="55" fill="#7aaa4a" transform="rotate(-15 256 150)"/>
+  <ellipse cx="256" cy="150" rx="90" ry="55" fill="#5a8a3a" opacity="0.4" transform="rotate(-15 256 150) translate(5 5)"/>
+  <!-- left leaf -->
+  <ellipse cx="175" cy="195" rx="60" ry="35" fill="#6a9a3a" transform="rotate(-40 175 195)"/>
+  <!-- right leaf -->
+  <ellipse cx="340" cy="148" rx="60" ry="32" fill="#6a9a3a" transform="rotate(20 340 148)"/>
+  <!-- leaf veins -->
+  <line x1="256" y1="170" x2="226" y2="128" stroke="#5a8a2a" stroke-width="3" opacity="0.7"/>
+  <line x1="256" y1="170" x2="286" y2="128" stroke="#5a8a2a" stroke-width="3" opacity="0.7"/>
+  <!-- water drop -->
+  <path d="M390 80 Q390 50 370 40 Q350 50 350 80 Q350 100 370 100 Q390 100 390 80Z" fill="#3ab5e8"/>
+</svg>

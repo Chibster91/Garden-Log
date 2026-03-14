@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌱 Garden Care Log</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c1a0e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Garden Log">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --soil: #2c1a0e;
+    --bark: #4a2f1a;
+    --moss: #5a7a3a;
+    --leaf: #7aaa4a;
+    --sage: #a8b87a;
+    --cream: #f5eedc;
+    --parchment: #ede0c4;
+    --rust: #c85a2a;
+    --gold: #d4a43a;
+    --mist: rgba(245, 238, 220, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--soil);
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(90,122,58,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(74,47,26,0.4) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%232c1a0e'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%23321d10' opacity='0.6'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23291808' opacity='0.4'/%3E%3C/svg%3E");
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--cream);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  header::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--moss), var(--gold), var(--moss), transparent);
+    margin-top: 1.2rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    color: var(--cream);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  header h1 span {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  header p {
+    font-size: 1rem;
+    color: var(--sage);
+    margin-top: 0.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+    gap: 0.8rem;
+  }
+
+  .controls-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .controls-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .row-label {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 600;
+    min-width: 72px;
+    opacity: 0.8;
+  }
+
+  .month-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .month-nav button {
+    background: var(--bark);
+    border: 1px solid var(--moss);
+    color: var(--cream);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .month-nav button:hover {
+    background: var(--moss);
+    border-color: var(--gold);
+    color: var(--soil);
+  }
+
+  .month-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--cream);
+    min-width: 200px;
+    text-align: center;
+  }
+
+  .fertilizer-types {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .fert-btn {
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    opacity: 0.6;
+  }
+
+  .fert-btn.active { opacity: 1; transform: scale(1.05); }
+
+  .fert-btn[data-type="general"]   { background: #3a5c2a; border-color: var(--leaf); color: var(--cream); }
+  .fert-btn[data-type="nitrogen"]  { background: #2a4a5a; border-color: #5aaSaa; color: var(--cream); }
+  .fert-btn[data-type="bloom"]     { background: #6a2a5a; border-color: #cc66aa; color: var(--cream); }
+  .fert-btn[data-type="compost"]   { background: #5a3a1a; border-color: var(--gold); color: var(--cream); }
+
+  .fert-btn[data-type="nitrogen"]  { border-color: #5ab5cc; }
+  .fert-btn[data-type="nitrogen"]  { background: #1a4055; }
+
+  .fert-btn[data-type="water"]      { background: #0d4a6e; border-color: #3ab5e8; color: var(--cream); }
+  .fert-btn[data-type="deep-water"] { background: #0a2e45; border-color: #1a6fa0; color: var(--cream); }
+  .fert-btn[data-type="rainwater"]  { background: #1a3a4a; border-color: #6ab5d8; color: var(--cream); }
+
+  .calendar-grid {
+    background: rgba(74, 47, 26, 0.4);
+    border: 1px solid rgba(90, 122, 58, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+
+  .day-headers {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--bark);
+    border-bottom: 2px solid var(--moss);
+  }
+
+  .day-header {
+    padding: 0.6rem;
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sage);
+    font-weight: 600;
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .day-cell {
+    min-height: 80px;
+    padding: 0.4rem;
+    border-right: 1px solid rgba(90,122,58,0.15);
+    border-bottom: 1px solid rgba(90,122,58,0.15);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .day-cell:hover { background: rgba(90,122,58,0.12); }
+  .day-cell.empty { cursor: default; background: rgba(0,0,0,0.15); }
+  .day-cell.today .day-num { 
+    background: var(--moss);
+    color: var(--cream);
+    border-radius: 50%;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .day-num {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--sage);
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.2rem;
+    flex-shrink: 0;
+  }
+
+  .fert-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    flex: 1;
+  }
+
+  .fert-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.15s;
+    position: relative;
+  }
+
+  .fert-dot:hover { transform: scale(1.4); }
+
+  .fert-dot[data-type="general"]  { background: var(--leaf); }
+  .fert-dot[data-type="nitrogen"] { background: #5ab5cc; }
+  .fert-dot[data-type="bloom"]    { background: #cc66aa; }
+  .fert-dot[data-type="compost"]  { background: var(--gold); }
+  /* Watering types — diamond shape */
+  .fert-dot[data-type="water"]       { background: #3ab5e8; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border-radius: 0; }
+  .fert-dot[data-type="deep-water"]  { background: #1a6fa0; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border-radius: 0; }
+  .fert-dot[data-type="rainwater"]   { background: #6ab5d8; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); border-radius: 0; }
+
+  /* Log panel */
+  .log-panel {
+    margin-top: 1.5rem;
+    background: rgba(74,47,26,0.4);
+    border: 1px solid rgba(90,122,58,0.3);
+    border-radius: 8px;
+    padding: 1.2rem 1.5rem;
+  }
+
+  .log-panel h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(212,164,58,0.3);
+  }
+
+  .log-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .log-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 4px;
+    font-size: 0.95rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+  .log-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  .log-entry-date { color: var(--sage); font-weight: 600; min-width: 90px; }
+  .log-entry-type { color: var(--cream); flex: 1; }
+
+  .log-entry-del {
+    background: none; border: none; color: var(--rust); cursor: pointer;
+    font-size: 1rem; padding: 0 0.2rem; opacity: 0.6; transition: opacity 0.15s;
+  }
+  .log-entry-del:hover { opacity: 1; }
+
+  .no-entries { color: var(--sage); font-style: italic; font-size: 0.95rem; }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(90,122,58,0.2);
+    font-size: 0.88rem;
+  }
+
+  .legend-item {
+    display: flex; align-items: center; gap: 0.4rem; color: var(--sage);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bark);
+    border: 1px solid var(--moss);
+    color: var(--cream);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    display: none;
+  }
+
+  .fert-dot:hover .tooltip { display: block; }
+
+  /* Note input */
+  .note-section {
+    margin-top: 0.8rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .note-input {
+    flex: 1;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(90,122,58,0.4);
+    border-radius: 4px;
+    color: var(--cream);
+    padding: 0.4rem 0.7rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .note-input:focus { border-color: var(--moss); }
+  .note-input::placeholder { color: rgba(168,184,122,0.5); }
+
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(90,122,58,0.2);
+    flex-wrap: wrap;
+  }
+
+  .save-btn {
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid var(--moss);
+    background: var(--bark);
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .save-btn:hover { background: var(--moss); color: var(--soil); }
+
+  #saveStatus {
+    font-size: 0.85rem;
+    color: var(--sage);
+    font-style: italic;
+    transition: opacity 0.5s;
+  }
+    header h1 { font-size: 1.9rem; }
+    .day-cell { min-height: 55px; }
+    .controls { flex-direction: column; align-items: flex-start; }
+    .month-nav { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🌿 <span>Garden</span> Care Log</h1>
+    <p>Water it. Feed it. Don't kill it.</p>
+  </header>
+
+  <div class="controls">
+    <div class="controls-top">
+      <div class="month-nav">
+        <button id="prevBtn">&#8592;</button>
+        <div class="month-label" id="monthLabel"></div>
+        <button id="nextBtn">&#8594;</button>
+      </div>
+    </div>
+    <div class="controls-rows">
+      <div class="action-row">
+        <span class="row-label">🌱 Fertilize</span>
+        <button class="fert-btn active" data-type="general">General</button>
+        <button class="fert-btn" data-type="nitrogen">Nitrogen</button>
+        <button class="fert-btn" data-type="bloom">Bloom</button>
+        <button class="fert-btn" data-type="compost">Compost</button>
+      </div>
+      <div class="action-row">
+        <span class="row-label">💧 Water</span>
+        <button class="fert-btn" data-type="water">Regular</button>
+        <button class="fert-btn" data-type="deep-water">Deep Soak</button>
+        <button class="fert-btn" data-type="rainwater">Rain ☁️</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-grid">
+    <div class="day-headers">
+      <div class="day-header">Sun</div>
+      <div class="day-header">Mon</div>
+      <div class="day-header">Tue</div>
+      <div class="day-header">Wed</div>
+      <div class="day-header">Thu</div>
+      <div class="day-header">Fri</div>
+      <div class="day-header">Sat</div>
+    </div>
+    <div class="days-grid" id="daysGrid"></div>
+  </div>
+
+  <div class="log-panel">
+    <h3>📋 Garden Log — <span id="logMonthLabel"></span></h3>
+    <div class="log-entries" id="logEntries"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--leaf)"></div> General</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5ab5cc"></div> Nitrogen</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#cc66aa"></div> Bloom</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> Compost</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3ab5e8;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></div> Water</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1a6fa0;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></div> Deep Soak</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#6ab5d8;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)"></div> Rain</div>
+    </div>
+    <div class="save-row">
+      <button class="save-btn" id="saveBtn">💾 Save Data</button>
+      <label class="save-btn load-btn" for="loadInput">📂 Load Data</label>
+      <input type="file" id="loadInput" accept="application/json,text/plain,.json" style="display:none">
+      <span id="saveStatus"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  let gardenData = {};
+  let currentDate = new Date();
+  let viewYear = currentDate.getFullYear();
+  let viewMonth = currentDate.getMonth();
+  let selectedType = 'general';
+
+  const typeLabels = {
+    general: '🌱 General Fertilizer',
+    nitrogen: '💧 Nitrogen Boost',
+    bloom: '🌸 Bloom Booster',
+    compost: '🟤 Compost',
+    water: '💧 Watered',
+    'deep-water': '💧 Deep Soak',
+    rainwater: '☁️ Rain'
+  };
+
+  function dateKey(y, m, d) {
+    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+
+  function renderCalendar() {
+    const grid = document.getElementById('daysGrid');
+    grid.innerHTML = '';
+
+    const label = new Date(viewYear, viewMonth, 1)
+      .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    document.getElementById('monthLabel').textContent = label;
+    document.getElementById('logMonthLabel').textContent = label;
+
+    const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    const today = currentDate;
+
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'day-cell empty';
+      grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'day-cell';
+      const isToday = (d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear());
+      if (isToday) cell.classList.add('today');
+
+      const numEl = document.createElement('div');
+      numEl.className = 'day-num';
+      numEl.textContent = d;
+      cell.appendChild(numEl);
+
+      const dotsEl = document.createElement('div');
+      dotsEl.className = 'fert-dots';
+
+      const key = dateKey(viewYear, viewMonth, d);
+      const entries = gardenData[key] || [];
+      entries.forEach((entry, idx) => {
+        const dot = document.createElement('div');
+        dot.className = 'fert-dot';
+        dot.dataset.type = entry.type;
+        const tip = document.createElement('div');
+        tip.className = 'tooltip';
+        tip.textContent = typeLabels[entry.type] + (entry.note ? `: ${entry.note}` : '');
+        dot.appendChild(tip);
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          removeEntry(key, idx);
+        });
+        dotsEl.appendChild(dot);
+      });
+
+      cell.appendChild(dotsEl);
+      cell.addEventListener('click', () => addEntry(key));
+      grid.appendChild(cell);
+    }
+
+    renderLog();
+  }
+
+  function addEntry(key) {
+    if (!gardenData[key]) gardenData[key] = [];
+    gardenData[key].push({ type: selectedType, note: '', timestamp: Date.now() });
+    try { localStorage.setItem('garden_log_v1', JSON.stringify(gardenData)); } catch(e) {}
+    renderCalendar();
+  }
+
+  function removeEntry(key, idx) {
+    if (gardenData[key]) {
+      gardenData[key].splice(idx, 1);
+      if (gardenData[key].length === 0) delete gardenData[key];
+    }
+    try { localStorage.setItem('garden_log_v1', JSON.stringify(gardenData)); } catch(e) {}
+    renderCalendar();
+  }
+
+  function renderLog() {
+    const logEl = document.getElementById('logEntries');
+    logEl.innerHTML = '';
+
+    const entries = [];
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    for (let d = 1; d <= daysInMonth; d++) {
+      const key = dateKey(viewYear, viewMonth, d);
+      (gardenData[key] || []).forEach((entry, idx) => {
+        entries.push({ key, d, idx, ...entry });
+      });
+    }
+
+    if (entries.length === 0) {
+      logEl.innerHTML = '<div class="no-entries">Nothing logged this month yet. Go forth and tend your goblin garden, frog.</div>';
+      return;
+    }
+
+    entries.forEach(e => {
+      const row = document.createElement('div');
+      row.className = 'log-entry';
+
+      const dot = document.createElement('div');
+      dot.className = 'log-dot';
+      const colors = { general: 'var(--leaf)', nitrogen: '#5ab5cc', bloom: '#cc66aa', compost: 'var(--gold)', water: '#3ab5e8', 'deep-water': '#1a6fa0', rainwater: '#6ab5d8' };
+      dot.style.background = colors[e.type] || '#888';
+
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'log-entry-date';
+      dateSpan.textContent = new Date(viewYear, viewMonth, e.d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      const typeSpan = document.createElement('span');
+      typeSpan.className = 'log-entry-type';
+      typeSpan.textContent = typeLabels[e.type] + (e.note ? ` — ${e.note}` : '');
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'log-entry-del';
+      delBtn.textContent = '✕';
+      delBtn.addEventListener('click', () => removeEntry(e.key, e.idx));
+
+      row.append(dot, dateSpan, typeSpan, delBtn);
+      logEl.appendChild(row);
+    });
+  }
+
+  // Save to JSON file
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(gardenData, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'garden_log.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    const status = document.getElementById('saveStatus');
+    status.textContent = 'Saved!';
+    setTimeout(() => status.textContent = '', 2500);
+  });
+
+  // Load from JSON file
+  document.getElementById('loadInput').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        gardenData = JSON.parse(ev.target.result);
+        renderCalendar();
+        const status = document.getElementById('saveStatus');
+        status.textContent = 'Data loaded!';
+        setTimeout(() => status.textContent = '', 2500);
+      } catch {
+        alert('Could not read that file. Make sure it\'s a garden_log.json from this app.');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // Type selector
+  document.querySelectorAll('.fert-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.fert-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedType = btn.dataset.type;
+    });
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    renderCalendar();
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    renderCalendar();
+  });
+
+  // Auto-save to localStorage whenever data changes
+  function saveAuto() {
+    try { localStorage.setItem('garden_log_v1', JSON.stringify(gardenData)); } catch(e) {}
+  }
+
+  // Load from localStorage on startup
+  try {
+    const stored = localStorage.getItem('garden_log_v1');
+    if (stored) gardenData = JSON.parse(stored);
+  } catch(e) {}
+
+  // Patch addEntry and removeEntry to also auto-save
+  const _origAdd = addEntry;
+  const _origRemove = removeEntry;
+
+  renderCalendar();
+
+  // Wrap mutations to trigger autosave
+  document.getElementById('daysGrid').addEventListener('click', () => setTimeout(saveAuto, 50));
+
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
