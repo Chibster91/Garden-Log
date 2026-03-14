@@ -84,20 +84,23 @@
     flex-direction: column;
     margin-bottom: 1.5rem;
     gap: 0.8rem;
+    width: 100%;
+    align-items: center;
   }
 
   .controls-top {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 1rem;
+    width: 100%;
   }
 
   .controls-rows {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
+    align-items: center;
   }
 
   .action-row {
@@ -106,6 +109,7 @@
     justify-content: center;
     gap: 0.6rem;
     flex-wrap: wrap;
+    width: 100%;
   }
 
   .row-label {
@@ -114,14 +118,23 @@
     text-transform: uppercase;
     color: var(--sage);
     font-weight: 600;
-    min-width: 72px;
     opacity: 0.8;
   }
 
   .month-nav {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
+    width: 100%;
+  }
+
+  .month-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--cream);
+    width: 220px;
+    text-align: center;
   }
 
   .month-nav button {
@@ -141,14 +154,6 @@
     background: var(--moss);
     border-color: var(--gold);
     color: var(--soil);
-  }
-
-  .month-label {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--cream);
-    min-width: 200px;
-    text-align: center;
   }
 
   .fertilizer-types {
